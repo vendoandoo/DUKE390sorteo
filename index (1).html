@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo KTM Duke 390</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #FF6600;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        #numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 5px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .number {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: default;
+        }
+        .sold {
+            background-color: #b0b0b0;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sorteo Moto KTM Duke 390</h1>
+    <p>📅 Sorteo: 30 de junio, 21:00hs - Lotería Nacional</p>
+    <p>📩 Confirmá tu reserva enviando WhatsApp al +54 9 3489 541676</p>
+
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Buscar número..." />
+    </div>
+
+    <div id="numbers"></div>
+
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQrZ9F4Qh1vnYz-KVkxHgFdjD9IHG72uZJgtqCE38Tlv6VFR1Z2MFSRX02PKzFmmEv7Ol6pT6GJvBh6/pub?output=csv';
+
+        async function fetchData() {
+            try {
+                const response = await fetch(sheetUrl);
+                const data = await response.text();
+                const rows = data.split('\n').slice(1);
+
+                const numbersDiv = document.getElementById('numbers');
+                numbersDiv.innerHTML = '';
+
+                rows.forEach(row => {
+                    const [number, status] = row.split(',');
+                    if (number) {
+                        const div = document.createElement('div');
+                        div.className = 'number';
+                        div.textContent = number.padStart(3, '0');
+                        if (status.trim().toLowerCase() !== 'disponible') {
+                            div.classList.add('sold');
+                        }
+                        numbersDiv.appendChild(div);
+                    }
+                });
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
+        }
+
+        document.getElementById('search').addEventListener('input', function() {
+            const searchValue = this.value.trim();
+            const numbers = document.querySelectorAll('.number');
+            numbers.forEach(number => {
+                if (number.textContent.includes(searchValue)) {
+                    number.style.backgroundColor = '#FF6600';
+                } else {
+                    if (number.classList.contains('sold')) {
+                        number.style.backgroundColor = '#b0b0b0';
+                    } else {
+                        number.style.backgroundColor = '#4CAF50';
+                    }
+                }
+            });
+        });
+
+        fetchData();
+    </script>
+
+</body>
+</html>
